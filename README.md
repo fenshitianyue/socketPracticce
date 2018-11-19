@@ -1,1 +1,1 @@
-# sock practice
+# internet socket practice
