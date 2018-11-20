@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
       break;
     }
     buf[read_size] = '\0';
-    sendto(sock, buf, strlen(buf), (sockaddr*)&server_addr, sizeof(server_addr));
+    sendto(sock, buf, strlen(buf), 0, (sockaddr*)&server_addr, sizeof(server_addr));
     char buf_output[1024] = {0};
     read_size = recvfrom(sock, buf, sizeof(buf_output) - 1, 0, NULL, NULL);
     printf("server response:%s\n", buf_output);
