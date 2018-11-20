@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
   addr.sin_addr.s_addr = inet_addr(argv[1]);
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   CheckErrorQuit(fd, "socket");
-  int ret = bind(fd, (sockaddr*)&addr, sizeof(addr));
+  int ret = bind(fd, (struct sockaddr*)&addr, sizeof(addr));
   CheckErrorQuit(ret, "bind");
   ret = listen(fd, 10);
   CheckErrorQuit(ret, "listen");
