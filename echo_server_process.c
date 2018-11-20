@@ -12,6 +12,7 @@
 
 void Usage(){
   printf("usage: ./server [ip] [port]\n");
+  exit(1);
 }
 
 void CheckErrorQuit(const int n, const char* s){
