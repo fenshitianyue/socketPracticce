@@ -41,7 +41,9 @@ public:
         std::string resp;
         handler(req, &resp);
         //发送响应
-        new_sock.Send(resp);
+        if(!new_sock.Send(resp)){
+          return false;
+        }
       }
     }
     return true;
