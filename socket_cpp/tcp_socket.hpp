@@ -142,6 +142,29 @@ public:
     return true;
   }
 
+  bool SendNoBlock(const std::string& buf) const {
+    ///////////////////////////////////////////////////////
+    //      对于非阻塞IO的写入，如果TCP的发送缓冲区已满，就会
+    //  出现出错，错误码为：EAGAIN / EWOULDBLOCK。这种情况
+    //  下要继续重试
+    ///////////////////////////////////////////////////////
+    ssize_t cur_pos = 0; 
+    size_t left_size = buf.size();
+    while(true){
+      ssize_t write_size = send(_fd, buf.data() + cur_pos, left_size, 0);
+      if(write_size < 0){
+        if(EAGAIN == errno | EWOULDBLOCK == errno) 
+          continue;
+        return false;
+      }
+      cur_pos += write_size;
+      left_size -= write_size;
+      if(left_size <= 0)  //说明已经将要发送的数据全部发送了
+        break;
+    }
+    return true;
+  }
+
   int GetFd() const {
     return _fd;
   }
