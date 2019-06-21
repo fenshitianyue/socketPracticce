@@ -7,7 +7,7 @@
 #include <functional>
 #include "tcp_socket.hpp"
 
-using Handler = std::function<void(const std::string&req, std::string* resp)>;
+using Handler = std::function<void(const std::string& req, std::string* resp)>;
 
 class TcpServer{
 public:
