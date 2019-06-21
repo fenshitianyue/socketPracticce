@@ -99,6 +99,49 @@ public:
     return true;
   }
 
+  //将文件描述符设置未非阻塞模式
+  bool SetNoBlock(){
+    int f = fcntl(_fd, F_GETFL);
+    if(f < 0){
+      perror("fcntl F_GETFL");
+      return false;
+    }
+    if(fcntl(_fd, F_SETFL, f | O_NONBLOCK)){
+      perror("fcntl F_SETFL");
+      return false;
+    }
+    return true;
+  }
+
+  bool RecvNoBlock(std::string* buf) const {
+    ///////////////////////////////////////////////////////
+    //     对于非阻塞 IO d读数据，如果TCP接收缓冲区为空，
+    // 就会返回错误，错误码为：EAGAIN / EWOULDBLOCK。这
+    // 种情况下就要重试
+    //     这里先采用：如果读到的数据长度小于尝试读的缓冲区
+    // 长度，就退出循环（这种写法不严谨，后面改进）
+    ///////////////////////////////////////////////////////
+    buf->clear(); 
+    char tmp[1024 * 10] = {0};
+    while(true){
+      ssize_t read_size = recv(_fd, tmp, sizeof(tmp) - 1, 0);
+      if(read_size < 0){
+        if(EAGAIN == errno | EWOULDBLOCK == errno)
+          continue;
+        perror("recv");
+        return false;
+      }else if(0 == read_size){
+        //对端关闭socket
+        return false;
+      }
+      tmp[read_size] = '\0';
+      *buf += tmp;
+      if(read_size < (ssize_t)sizeof(tmp) - 1)
+        break;
+    }
+    return true;
+  }
+
   int GetFd() const {
     return _fd;
   }
