@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <unistd.h>
 #include <string>
 #include <sys/socket.h>
@@ -169,6 +168,6 @@ public:
     return _fd;
   }
 private:
-  int _fd;
+  int _fd; //socket句柄
 };
 
