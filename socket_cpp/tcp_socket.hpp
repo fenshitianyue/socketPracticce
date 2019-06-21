@@ -49,7 +49,7 @@ public:
     return 0;
   }
 
-  bool Accept(TcpSocket& peer, std::string& ip, uint16_t& port) const {
+  bool Accept(TcpSocket* peer, std::string* ip = NULL, uint16_t* port = NULL) const {
     sockaddr_in peer_addr;
     socklen_t len = sizeof(peer_addr);
     int new_sock;
@@ -57,14 +57,16 @@ public:
       perror("accept");
       return false;
     }
-    peer._fd = new_sock;
-    ip = inet_ntoa(peer_addr.sin_addr);
-    port = ntohs(peer_addr.sin_port);
+    peer->_fd = new_sock;
+    if(ip != NULL)
+      *ip = inet_ntoa(peer_addr.sin_addr);
+    if(port != NULL)
+      *port = ntohs(peer_addr.sin_port);
     return true;
   }
 
-  bool Recv(std::string& buf) const {
-    buf.clear();
+  bool Recv(std::string* buf) const {
+    buf->clear();
     char tmp[4096] = {0};
     ssize_t read_size = recv(_fd, tmp, sizeof(tmp), 0);
     if(read_size < 0){ //recv 失败
@@ -73,7 +75,7 @@ public:
     }else if(0 == read_size){  //未读取到数据
       return false;
     }
-    buf.assign(tmp, read_size); //填充读取缓冲区数据
+    buf->assign(tmp, read_size); //填充读取缓冲区数据
     return true; 
   }
   
